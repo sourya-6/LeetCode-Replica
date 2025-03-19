@@ -7,6 +7,7 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
       
       cb(null, file.originalname)
+      //Date.now()+path.extname(file.originalname)-->creates a unique id for each file
     }
   })
   
