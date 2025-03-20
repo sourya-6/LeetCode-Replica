@@ -2,8 +2,7 @@ import {User} from "../models/user.models.js";
 import {ApiError} from "../utils/ApiError.js";
 import {ApiResponse} from "../utils/apiResponse.js";
 import {asyncHandler} from "../utils/asyncHandler.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+
 import {validateEmail}  from "../utils/validateEmail.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js";
 // Register User
