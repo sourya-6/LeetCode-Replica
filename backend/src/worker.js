@@ -5,7 +5,7 @@ async function processJobs() {
     console.log("Worker started...");
     
     while (true) {
-        const jobData = await redisClient.lpop("jobQueue");
+        const jobData = await redisClient.lPop("jobQueue");
         if (!jobData) {
             await new Promise(resolve => setTimeout(resolve, 1000)); // Wait before checking again
             continue;

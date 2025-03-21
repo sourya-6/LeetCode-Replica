@@ -1,17 +1,17 @@
-version: '3.8'
-
 services:
   backend:
-    build: .
+    build: 
+      dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "3000:3000"
     depends_on:
       - redis
+      - mongo
     volumes:
       - .:/app
-    command: ["node", "src/server.js"]
+    command: ["node", "src/index.js"]
     environment:
-      - MONGODB_URI=mongodb://mongo:27017
+      - MONGODB_URI=mongodb+srv://saisourya678:1234@backendlearn.r55yl.mongodb.net # Correct MongoDB URI with database name
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     networks:
@@ -21,10 +21,12 @@ services:
     build: .
     depends_on:
       - redis
+      - mongo
     volumes:
       - .:/app
     command: ["node", "src/worker.js"]
     environment:
+      - MONGODB_URI=mongodb+srv://saisourya678:1234@backendlearn.r55yl.mongodb.net # Worker also needs MongoDB access
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     networks:
