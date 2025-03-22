@@ -9,6 +9,7 @@ export const verifyJWT=asyncHandler(async(req,_,next)=>{
     try {
         const token=req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","") 
         //taking accessToken From the cookies if in mobile from the header 
+       
         if(!token){
             throw new ApiError(401,"Unauthorized Author")
         }

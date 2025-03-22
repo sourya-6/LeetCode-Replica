@@ -27,14 +27,14 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existingUser) throw new ApiError(400, "User with these email already exists!");
 
 
-  const avatarlocalPath=req.files?.avatar[0]?.path
-  if(!avatarlocalPath){
-    throw new ApiError(400,"Fetching avatar failed")
-  }
-  const avatar =await uploadOnCloudinary(avatarlocalPath)
-  if(!avatar.url){
-    throw new ApiError(400,"Error while uploading on avatar")
-  }
+  // const avatarlocalPath=req.files?.avatar[0]?.path
+  // if(!avatarlocalPath){
+  //   throw new ApiError(400,"Fetching avatar failed")
+  // }
+  // const avatar =await uploadOnCloudinary(avatarlocalPath)
+  // if(!avatar.url){
+  //   throw new ApiError(400,"Error while uploading on avatar")
+  // }
 
   const newUser = new User(
     {
@@ -42,7 +42,7 @@ const registerUser = asyncHandler(async (req, res) => {
         email, 
         password,
         phoneNumber,
-        avatar:avatar.url,
+        //avatar:avatar.url,
         username:username.toLowerCase()
     });
   await newUser.save();
@@ -54,9 +54,22 @@ const registerUser = asyncHandler(async (req, res) => {
 );
 });
 
-// Login User
+// // Login User
+// const loginUser = asyncHandler(async (req, res) => {
+//   const { email, password } = req.body;
+//   console.log('hey');
+//   const user = await User.findOne({ email });
+//   if (!user) throw new ApiError(404, "User not found");
+
+//   const isMatch = await user.isPasswordCorrect(password);
+//   if (!isMatch) throw new ApiError(400, "Invalid credentials");
+
+//   const token = user.generateAccessToken();
+//   res.status(200).json(new ApiResponse(200, "Login successful", { token, user }));
+// });
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  
   const user = await User.findOne({ email });
   if (!user) throw new ApiError(404, "User not found");
 
@@ -64,8 +77,17 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!isMatch) throw new ApiError(400, "Invalid credentials");
 
   const token = user.generateAccessToken();
-  res.status(200).json(new ApiResponse(200, "Login successful", { token, user }));
+
+  // 🔥 Set the cookie properly
+  res.cookie("accessToken", token, {
+    httpOnly: true, // Prevents XSS attacks
+    secure: true, // Only HTTPS in production
+    sameSite: "strict", // CSRF protection
+  });
+
+  res.status(200).json(new ApiResponse(200, "Login successful", { user }));
 });
+
 
 // Logout User
 const logoutUser = asyncHandler(async (req, res) => {

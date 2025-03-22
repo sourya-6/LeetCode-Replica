@@ -11,9 +11,13 @@ services:
       - .:/app
     command: ["node", "src/index.js"]
     environment:
-      - MONGODB_URI=mongodb+srv://saisourya678:1234@backendlearn.r55yl.mongodb.net # Correct MongoDB URI with database name
+      - MONGODB_URI=mongodb+srv://saisourya678:1234@backendlearn.r55yl.mongodb.net
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - ACCESS_TOKEN_SECRET=SJSIOSNJSMjoH96ss3anJmHJBhbkjhbbkbjkbjk49626
+      - ACCESS_TOKEN_EXPIRY=1d
+      - REFRESH_TOKEN_SECRET=CHAI_AUR_CODEJSXZZIJDODNJVBJKDHADBJS
+      - REFRESH_TOKEN_EXPIRY=10d
     networks:
       - app-network
 
@@ -26,7 +30,7 @@ services:
       - .:/app
     command: ["node", "src/worker.js"]
     environment:
-      - MONGODB_URI=mongodb+srv://saisourya678:1234@backendlearn.r55yl.mongodb.net # Worker also needs MongoDB access
+      - MONGODB_URI=mongodb+srv://saisourya678:1234@backendlearn.r55yl.mongodb.net
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     networks:
