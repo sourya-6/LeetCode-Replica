@@ -1,15 +1,35 @@
 import { exec } from "child_process";
+import util from "util";
+import path from "path";
+import fs from "fs";
 
-export const executeCode = (code, language) => {
-    return new Promise((resolve, reject) => {
-        let command;
-        if (language === "python") command = `python3 -c "${code}"`;
-        else if (language === "javascript") command = `node -e "${code}"`;
-        else return reject("Unsupported language");
+const execPromise = util.promisify(exec);
 
-        exec(command, (err, stdout, stderr) => {
-            if (err) return reject(stderr);
-            resolve(stdout);
-        });
-    });
+export const executeCode = async (filePath, language) => {
+  let command = "";
+
+  if (language === "python") {
+    command = `python3 ${filePath}`;
+  } else if (language === "javascript") {
+    command = `node ${filePath}`;
+  } else if (language === "cpp") {
+    const outputPath = filePath.replace(/\.cpp$/, ".out");
+    command = `g++ ${filePath} -o ${outputPath} && ${outputPath}`;
+  } else {
+    throw new Error("Unsupported language");
+  }
+
+  try {
+    const { stdout, stderr } = await execPromise(command, { timeout: 5000 });
+
+    if (stderr) {
+      throw new Error(stderr);
+    }
+
+    const lines = stdout.trim().split("\n");
+    const lastLine = lines[lines.length - 1];
+    return lastLine;
+  } catch (error) {
+    throw new Error(error.message || "Execution failed");
+  }
 };

@@ -1,41 +1,32 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import redisClient from "../utils/redisClient.js";
-import { v4 as uuidv4 } from "uuid";
+import {
+  submitCode,
+  getCodeExecutionResult,
+} from "../services/codeExecution.service.js";
 
-// Submit Code for Execution
+// Submit code (controller)
 export const executeCodeController = asyncHandler(async (req, res) => {
-  const { code, language } = req.body;
-  console.log(req.user)
-  if (!code || !language) {
-    throw new ApiError(400, "Code and Language are required");
-  }
-  if (!req.user || !req.user.id) {
-    throw new ApiError(401, "Unauthorized: Please log in to execute code");
-  }
+  const { code, language, functionName, testCases } = req.body;
+  const userId = req.user?.id;
 
-  const jobId = uuidv4(); // Generate unique job ID
-  const jobData = JSON.stringify({ jobId, code, language });
-
-  await redisClient.rPush("jobQueue", jobData); // Push job to Redis queue
+  const jobId = await submitCode(userId, code, language, functionName, testCases);
 
   res
     .status(202)
     .json(new ApiResponse(202, "Code submitted successfully!", { jobId }));
 });
 
-// Get Execution Result
+// Get result (controller)
 export const getCodeResult = asyncHandler(async (req, res) => {
   const { jobId } = req.params;
 
-  const result = await redisClient.get(`jobResults:${jobId}`);
-
+  const result = await getCodeExecutionResult(jobId);
   if (!result) {
-    throw new ApiError(404, "Result not found or still processing");
-  }
-  if (!req.user || !req.user.id) {
-    throw new ApiError(401, "Unauthorized: Please log in to execute code");
+    return res
+      .status(202)
+      .json(new ApiResponse(202, "Job is still processing", {}));
   }
 
   res

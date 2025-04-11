@@ -16,5 +16,5 @@ COPY . .
 # Expose the backend port
 EXPOSE 3000
 
-# Start the backend server
-CMD ["node", "index.js"]
+# Start the backend server (pointing to src/index.js)
+CMD ["node", "src/index.js"]

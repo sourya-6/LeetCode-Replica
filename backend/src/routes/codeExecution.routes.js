@@ -7,10 +7,11 @@ import {
 
 const router = express.Router();
 router.use(verifyJWT);
-// Protected Route - Only authenticated users can submit code
+
+// Submit code for execution
 router.post("/submit", executeCodeController);
 
-// Get Code Execution Result
-router.get("/result/:jobId",  getCodeResult);
+// Fetch result by jobId
+router.get("/result/:jobId", getCodeResult);
 
 export default router;

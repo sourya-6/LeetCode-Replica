@@ -1,6 +1,9 @@
+version: "3.9"
+
 services:
   backend:
-    build: 
+    build:
+      context: .
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
@@ -9,12 +12,14 @@ services:
       - mongo
     volumes:
       - .:/app
+      - ./temp:/app/temp
+
     command: ["node", "src/index.js"]
     environment:
       - MONGODB_URI=mongodb+srv://saisourya678:1234@backendlearn.r55yl.mongodb.net
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - ACCESS_TOKEN_SECRET=SJSIOSNJSMjoH96ss3anJmHJBhbkjhbbkbjkbjk49626
+      - ACCESS_TOKEN_SECRET=SJSIOSNJSMjoH96ss3anJmJHBhbkjhbbkbjkbjk49626
       - ACCESS_TOKEN_EXPIRY=1d
       - REFRESH_TOKEN_SECRET=CHAI_AUR_CODEJSXZZIJDODNJVBJKDHADBJS
       - REFRESH_TOKEN_EXPIRY=10d
@@ -22,7 +27,8 @@ services:
       - app-network
 
   worker:
-    build: .
+    build:
+      context: .
     depends_on:
       - redis
       - mongo
@@ -33,6 +39,8 @@ services:
       - MONGODB_URI=mongodb+srv://saisourya678:1234@backendlearn.r55yl.mongodb.net
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+    deploy:
+      replicas: 3
     networks:
       - app-network
 
@@ -48,10 +56,10 @@ services:
     restart: always
     ports:
       - "27017:27017"
-    networks:
-      - app-network
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-network
 
 networks:
   app-network:

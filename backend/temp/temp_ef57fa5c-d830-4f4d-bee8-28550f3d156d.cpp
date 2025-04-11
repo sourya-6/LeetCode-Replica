@@ -1,0 +1,1 @@
+#include <iostream>\n#include <string>\n#include <algorithm>\nusing namespace std;\n\nstring reverseAndCapitalize(string s) {\n    reverse(s.begin(), s.end());\n    if (!s.empty()) {\n        s[0] = toupper(s[0]);\n        for (size_t i = 1; i < s.size(); ++i) {\n            s[i] = tolower(s[i]);\n        }\n    }\n    return s;\n}
