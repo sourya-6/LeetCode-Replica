@@ -1,0 +1,10 @@
+@import "tailwindcss";
+/* index.css or App.css */
+.gutter {
+  background-color: #cbd5e1;
+  cursor: col-resize;
+}
+
+.gutter.gutter-horizontal {
+  width: 8px;
+}

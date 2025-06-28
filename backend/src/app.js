@@ -6,7 +6,8 @@ const app = express();
 
 // Initializing CORS
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    // origin: process.env.CORS_ORIGIN,
+    origin: ["http://localhost:5173", "https://www.paypal.com", "https://www.sandbox.paypal.com"],
     credentials: true
 }));
 
@@ -18,7 +19,16 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import codeExecutionRouter from "./routes/codeExecution.routes.js";
 import problemRouter from "./routes/problem.routes.js";
+// import leaderboardRoutes from "./src/routes/leaderboard.js";
+// import historyRoutes from "./src/routes/history.js";
+
+
+
+
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/codeExecution", codeExecutionRouter);
 app.use("/api/v1/problem", problemRouter);
+// app.use("/api/leaderboard", leaderboardRoutes);
+// app.use("/api/history", historyRoutes);
+
 export { app };

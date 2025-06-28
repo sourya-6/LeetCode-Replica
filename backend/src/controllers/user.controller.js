@@ -27,14 +27,6 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existingUser) throw new ApiError(400, "User with these email already exists!");
 
 
-  // const avatarlocalPath=req.files?.avatar[0]?.path
-  // if(!avatarlocalPath){
-  //   throw new ApiError(400,"Fetching avatar failed")
-  // }
-  // const avatar =await uploadOnCloudinary(avatarlocalPath)
-  // if(!avatar.url){
-  //   throw new ApiError(400,"Error while uploading on avatar")
-  // }
 
   const newUser = new User(
     {
