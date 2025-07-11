@@ -4,14 +4,13 @@ import CodeEditor from '../components/CodeEditor';
 import axios from '../utils/axios';
 
 const CodePlayground = () => {
-  const { id } = useParams(); // <- dynamic problem ID from URL
+  const { id } = useParams();
   const [problem, setProblem] = useState(null);
   const [language, setLanguage] = useState('python');
   const [code, setCode] = useState('// Write your function here');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch problem details
   useEffect(() => {
     async function fetchProblem() {
       try {
@@ -21,15 +20,33 @@ const CodePlayground = () => {
         console.error(err);
       }
     }
-
     fetchProblem();
   }, [id]);
+
+  const handleRun = async () => {
+    if (!problem) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await axios.post('/codeExecution/run', {
+        language,
+        code,
+        functionName: problem.functionName,
+        testCases: problem.testCases.slice(0, 2), // Only first 2 test cases
+      });
+      setResult({ output: res.data.output });
+    } catch (err) {
+      console.error(err);
+      setResult({ error: 'Run failed.' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!problem) return;
     setLoading(true);
     setResult(null);
-
     try {
       const res = await axios.post('/codeExecution/submit', {
         language,
@@ -38,10 +55,7 @@ const CodePlayground = () => {
         functionName: problem.functionName,
         testCases: problem.testCases,
       });
-
       const jobId = res.data.message.jobId;
-
-      // Poll for result
       let retries = 20;
       while (retries--) {
         const poll = await axios.get(`/codeExecution/result/${jobId}`);
@@ -82,13 +96,23 @@ const CodePlayground = () => {
         <CodeEditor language={language} value={code} onChange={setCode} />
       </div>
 
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        {loading ? 'Submitting...' : 'Submit Code'}
-      </button>
+      <div className="mt-4 flex gap-4">
+        <button
+          onClick={handleRun}
+          disabled={loading}
+          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+        >
+          {loading ? 'Running...' : 'Run Code'}
+        </button>
+
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          {loading ? 'Submitting...' : 'Submit Code'}
+        </button>
+      </div>
 
       {result && (
         <div className="mt-6">

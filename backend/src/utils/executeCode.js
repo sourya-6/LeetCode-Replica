@@ -30,6 +30,7 @@ export const executeCode = async (filePath, language) => {
     const lastLine = lines[lines.length - 1];
     return lastLine;
   } catch (error) {
+    console.log('hey')
     throw new Error(error.message || "Execution failed");
   }
 };
