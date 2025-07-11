@@ -1,21 +1,3 @@
-// import mongoose from "mongoose";
-
-// const submissionSchema = new mongoose.Schema({
-//     userId: { 
-//         user:{
-//             type:mongoose.Schema.Types.ObjectId,
-//             ref:"User",
-//         }
-//     },
-//     language: { type: String, required: true },
-//     code: { type: String, required: true },
-//     status: { type: String, enum: ["pending", "running", "success", "error"], default: "pending" },
-//     output: { type: String },
-//     error: { type: String },
-// }, { timestamps: true });
-
-// export default mongoose.model("Submission", submissionSchema);
-
 import mongoose from "mongoose";
 
 const testResultSchema = new mongoose.Schema({
@@ -34,8 +16,11 @@ const submissionSchema = new mongoose.Schema(
     testResults: [testResultSchema],
     passedCount: { type: Number, default: 0 },
     failedCount: { type: Number, default: 0 },
+    isAccepted: { type: Boolean, default: false },
+    score: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
+
 
 export const Submission = mongoose.model("Submission", submissionSchema);

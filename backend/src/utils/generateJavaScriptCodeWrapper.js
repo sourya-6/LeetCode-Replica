@@ -1,49 +1,42 @@
 export function generateJavaScriptWrapper({ userCode, testCases, functionName }) {
-  const parsedCases = testCases.map(tc => {
-    const [inputStr, expectedOutput] = [tc.input, tc.expectedOutput];
-    return {
-      input: JSON.parse(`[${inputStr}]`),
-      expected: JSON.parse(expectedOutput)
-    };
-  });
-
   return `
 ${userCode}
 
-function deepEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
-}
+function runTests() {
+  const results = [];
+  const testCases = ${JSON.stringify(testCases)};
 
-const testResults = [];
-let passedCount = 0;
+  for (const { input, expectedOutput } of testCases) {
+    try {
+      const parsedInput = JSON.parse(input);
+      const output = ${functionName}(parsedInput);
 
-const testCases = ${JSON.stringify(parsedCases)};
+      const normalizedOutput = typeof output === 'string' ? output : JSON.stringify(output);
+      const passed = normalizedOutput === expectedOutput;
 
-for (const tc of testCases) {
-  let actual;
-  try {
-    actual = ${functionName}(...tc.input);
-  } catch (e) {
-    actual = "Execution failed";
+      results.push({
+        input,
+        expectedOutput,
+        output: normalizedOutput,
+        passed
+      });
+    } catch (err) {
+      results.push({
+        input,
+        expectedOutput,
+        output: err.toString(),
+        passed: false
+      });
+    }
   }
 
-  const passed = deepEqual(actual, tc.expected);
-  if (passed) passedCount++;
-
-  testResults.push({
-    input: JSON.stringify(tc.input),
-    expectedOutput: JSON.stringify(tc.expected),
-    output: typeof actual === 'string' ? actual : JSON.stringify(actual),
-    passed
-  });
+  console.log(JSON.stringify({
+    passedCount: results.filter(r => r.passed).length,
+    failedCount: results.filter(r => !r.passed).length,
+    testResults: results
+  }));
 }
 
-const finalResult = {
-  passedCount,
-  failedCount: testCases.length - passedCount,
-  testResults
-};
-
-console.log(JSON.stringify(finalResult));
+runTests();
 `;
 }
