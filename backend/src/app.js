@@ -23,11 +23,13 @@ import problemRouter from "./routes/problem.routes.js";
 // import historyRoutes from "./src/routes/history.js";
 
 
+import submissionRoutes from "./routes/submission.routes.js";
 
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/codeExecution", codeExecutionRouter);
 app.use("/api/v1/problem", problemRouter);
+app.use("/api/v1/submissions", submissionRoutes);
 // app.use("/api/leaderboard", leaderboardRoutes);
 // app.use("/api/history", historyRoutes);
 

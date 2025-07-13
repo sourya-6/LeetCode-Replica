@@ -8,6 +8,10 @@ import Problems from "../pages/Problems";
 import ProblemDetail from "../pages/ProblemDetail";
 import SubmissionResult from "../pages/SubmissionResult";
 import CodePlayground from "../pages/CodePlayground";
+import MySubmissions from "../pages/MySubmissions";
+
+
+
 
 function App() {
   return (
@@ -21,6 +25,7 @@ function App() {
         <Route path="/problem/:id" element={<ProblemDetail />} />
         <Route path="/result" element={<SubmissionResult />} />
         <Route path="/playground/:id" element={<CodePlayground />} />
+        <Route path="/submissions" element={<MySubmissions />} />
       </Routes>
     </>
   );

@@ -4,12 +4,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../utils/axios';
 import CodeEditor from '../components/CodeEditor';
 import Split from 'react-split';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCode } from '../src/redux/slices/codeSlice';
+
 
 export default function ProblemDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [problem, setProblem] = useState(null);
-  const [code, setCode] = useState('// Write your code here');
+  // const [code, setCode] = useState('// Write your code here');
+  const dispatch = useDispatch();
+const codeMap = useSelector((state) => state.code.codeMap);
+const code = codeMap[id] || "// Write your code here";
+
   const [language, setLanguage] = useState('cpp');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [runResult, setRunResult] = useState(null);
@@ -33,42 +40,93 @@ export default function ProblemDetail() {
     };
   }, [isFullscreen]);
 
+  // const handleSubmit = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const submitRes = await axios.post('/codeExecution/submit', {
+  //       problemId: id,
+  //       code,
+  //       language,
+  //       functionName: problem.functionName,
+  //       testCases: problem.testCases,
+  //     });
+
+  //     const jobId = submitRes.data.message.jobId;
+
+  //     // Poll for the result
+  //     let retries = 20;
+  //     let result = null;
+
+  //     while (retries--) {
+  //       const pollRes = await axios.get(`/codeExecution/result/${jobId}`);
+  //       if (pollRes.data.message?.result) {
+  //         result = pollRes.data.message.result;
+  //         break;
+  //       }
+  //       await new Promise((r) => setTimeout(r, 1000));
+  //     }
+
+  //     navigate('/result', {
+  //       state: { jobId, result, problem, language, code },
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert('Submission failed!');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      const submitRes = await axios.post('/codeExecution/submit', {
-        problemId: id,
-        code,
-        language,
-        functionName: problem.functionName,
-        testCases: problem.testCases,
-      });
+  try {
+    setLoading(true);
+    const submitRes = await axios.post('/codeExecution/submit', {
+      problemId: id,
+      code,
+      language,
+      functionName: problem.functionName,
+      testCases: problem.testCases,
+    });
 
-      const jobId = submitRes.data.message.jobId;
+    const jobId = submitRes.data.message.jobId;
 
-      // Poll for the result
-      let retries = 20;
-      let result = null;
+    // ⏳ Poll for result
+    let retries = 20;
+    let result = null;
 
-      while (retries--) {
-        const pollRes = await axios.get(`/codeExecution/result/${jobId}`);
-        if (pollRes.data.message?.result) {
-          result = pollRes.data.message.result;
-          break;
-        }
-        await new Promise((r) => setTimeout(r, 1000));
+    while (retries--) {
+      const pollRes = await axios.get(`/codeExecution/result/${jobId}`);
+      if (pollRes.data.message?.result) {
+        result = pollRes.data.message.result;
+        break;
       }
-
-      navigate('/result', {
-        state: { jobId, result, problem, language, code },
-      });
-    } catch (err) {
-      console.error(err);
-      alert('Submission failed!');
-    } finally {
-      setLoading(false);
+      await new Promise((r) => setTimeout(r, 1000));
     }
-  };
+
+    if (!result) throw new Error("Job result timed out");
+
+    // 💾 Save submission to DB
+    await axios.post('/submission/save', {
+      problemId: id,
+      code,
+      language,
+      testResults: result.output.testResults,
+      passedCount: result.output.passedCount,
+      failedCount: result.output.failedCount,
+      score: result.score || 0  // optional
+    });
+
+    // 🚀 Navigate to result page
+    navigate('/result', {
+      state: { jobId, result, problem, language, code },
+    });
+  } catch (err) {
+    console.error(err);
+    alert('Submission failed!');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleRun = async () => {
     setRunResult(null);
@@ -107,7 +165,7 @@ export default function ProblemDetail() {
             </button>
           </div>
           <div className="flex-1 border rounded-lg overflow-hidden shadow">
-            <CodeEditor language={language} value={code} onChange={setCode} />
+            <CodeEditor language={language} value={code} onChange={(newCode) => dispatch(updateCode({ problemId: id, code: newCode }))} />
           </div>
         </div>
       )}
@@ -199,7 +257,7 @@ export default function ProblemDetail() {
               </button>
             </div>
             <div className="w-full h-[calc(100%-2rem)] border rounded-lg shadow-lg overflow-hidden">
-              <CodeEditor language={language} value={code} onChange={setCode} />
+              <CodeEditor language={language} value={code} onChange={(newCode) => dispatch(updateCode({ problemId: id, code: newCode }))} />
             </div>
           </div>
         </Split>

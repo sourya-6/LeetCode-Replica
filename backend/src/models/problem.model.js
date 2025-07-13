@@ -12,11 +12,12 @@ const problemSchema = new mongoose.Schema(
     description: { type: String, required: true },
     inputFormat: { type: String, required: true },
     outputFormat: { type: String, required: true },
-    constraints: [{ type: String }],  // Adding constraints field
+    constraints: [{ type: String }],
     examples: [{ type: String }],
-    difficulty: { type: String, enum: ["easy", "medium", "hard"], default: "easy" }, // Difficulty level
-    tags: [{ type: String }],  // Optional tags for categorization
+    difficulty: { type: String, enum: ["easy", "medium", "hard"], default: "easy" },
+    tags: [{ type: String }],
     testCases: [testCaseSchema],
+    maxScore: { type: Number, required: true, default: 100 }
   },
   { timestamps: true }
 );

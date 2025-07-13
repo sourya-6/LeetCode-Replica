@@ -1,6 +1,6 @@
 import { writeFile, unlink, mkdir } from "fs/promises";
 import { generateJavaScriptWrapper } from "./utils/generateJavaScriptCodeWrapper.js";
-
+import { Problem } from "./models/problem.model.js";
 import { v4 as uuid } from "uuid";
 import path from "path";
 import { executeCode } from "./utils/executeCode.js";
@@ -65,7 +65,14 @@ try {
 }
 
 async function processJob(job) {
-  const { language, code, functionName = "func", testCases = [], userId, problemId } = job;
+  const {
+    language,
+    code,
+    functionName = "func",
+    testCases = [],
+    userId,
+    problemId,
+  } = job;
   const jobId = job.id || uuid();
 
   // 🔥 Validate language
@@ -82,22 +89,35 @@ async function processJob(job) {
   // 🐍 Wrap Python test logic
   if (language === "python") {
     try {
-      wrappedCode = generatePythonWrapper({ userCode: code, testCases, functionName });
+      wrappedCode = generatePythonWrapper({
+        userCode: code,
+        testCases,
+        functionName,
+      });
       console.log("🐍 Python code wrapped.", wrappedCode);
     } catch (err) {
-      return { success: false, error: "🔥 Error wrapping Python code: " + err.message };
+      return {
+        success: false,
+        error: "🔥 Error wrapping Python code: " + err.message,
+      };
     }
   }
 
   if (language === "javascript") {
-  try {
-    wrappedCode = generateJavaScriptWrapper({ userCode: code, testCases, functionName });
-    console.log("📦 JavaScript code wrapped.");
-  } catch (err) {
-    return { success: false, error: "🔥 Error wrapping JS code: " + err.message };
+    try {
+      wrappedCode = generateJavaScriptWrapper({
+        userCode: code,
+        testCases,
+        functionName,
+      });
+      console.log("📦 JavaScript code wrapped.");
+    } catch (err) {
+      return {
+        success: false,
+        error: "🔥 Error wrapping JS code: " + err.message,
+      };
+    }
   }
-}
-
 
   try {
     await writeFile(filePath, wrappedCode);
@@ -119,16 +139,37 @@ async function processJob(job) {
         rawOutput,
       };
     }
+    const problem = await Problem.findById(problemId);
+    const totalTests = parsedOutput.passedCount + parsedOutput.failedCount;
+    // const scorePerTest = (problem?.maxScore || 100) / totalTests;
+    // parsedOutput.score = Math.round(scorePerTest * parsedOutput.passedCount);
+    if (totalTests > 0) {
+      const scorePerTest = (problem?.maxScore || 100) / totalTests;
+      parsedOutput.score = Math.round(scorePerTest * parsedOutput.passedCount);
+    } else {
+      parsedOutput.score = 0;
+    }
 
     // Determine if the submission is accepted
     const isAccepted = parsedOutput.failedCount === 0;
 
     // Return output and isAccepted flag
+    // return {
+    //   success: true,
+    //   output: parsedOutput,
+    //   isAccepted,
+    //   userId, // Pass userId and problemId to use in stats update
+    //   problemId,
+    // };
     return {
       success: true,
-      output: parsedOutput,
+      output: {
+        ...parsedOutput,
+        code,
+        language,
+      },
       isAccepted,
-      userId, // Pass userId and problemId to use in stats update
+      userId,
       problemId,
     };
   } catch (err) {
@@ -155,14 +196,21 @@ async function pollQueue() {
       await redisClient.set(`result:${job.id}`, JSON.stringify(result));
 
       if (!result.success) {
-        console.error(`❌ Job ${job.id} failed:\n`, result.error || result.rawOutput);
+        console.error(
+          `❌ Job ${job.id} failed:\n`,
+          result.error || result.rawOutput
+        );
       } else {
         console.log(`✅ Job ${job.id} succeeded:\n`, result.output);
 
         // ⭐ Update user stats if job was successful and has userId and problemId
         if (result.success && result.userId && result.problemId) {
           try {
-            await updateUserStats(result.userId, result.problemId, result.isAccepted);
+            await updateUserStats(
+              result.userId,
+              result.problemId,
+              result.isAccepted
+            );
             console.log(`📊 Stats updated for user ${result.userId}`);
           } catch (err) {
             console.error(`❌ Failed to update stats: ${err.message}`);
@@ -176,16 +224,3 @@ async function pollQueue() {
 }
 
 pollQueue();
-
-
-
-
-
-
-
-
-
-
-
-
-
