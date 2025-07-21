@@ -7,7 +7,7 @@ const app = express();
 // Initializing CORS
 app.use(cors({
     // origin: process.env.CORS_ORIGIN,
-    origin: ["http://localhost:5173", "https://www.paypal.com", "https://www.sandbox.paypal.com"],
+    origin: ["http://localhost:5173", "https://www.paypal.com", "https://www.sandbox.paypal.com","https://leet-code-replica.vercel.app"],
     credentials: true
 }));
 
