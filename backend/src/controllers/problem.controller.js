@@ -1,6 +1,6 @@
 import { Problem } from "../models/problem.model.js";
 import { Submission } from "../models/submissions.model.js";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { v4 as uuidv4 } from "uuid";
