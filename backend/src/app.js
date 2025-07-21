@@ -25,7 +25,9 @@ import problemRouter from "./routes/problem.routes.js";
 
 import submissionRoutes from "./routes/submission.routes.js";
 
-
+app.get("/", (req, res) => {
+  res.send("🚀 Leetcode Replica Backend is running!");
+});
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/codeExecution", codeExecutionRouter);
 app.use("/api/v1/problem", problemRouter);
