@@ -74,7 +74,7 @@ const loginUser = asyncHandler(async (req, res) => {
   res.cookie("accessToken", token, {
     httpOnly: true, // Prevents XSS attacks
     secure: true, // Only HTTPS in production
-    sameSite: "strict", // CSRF protection
+    sameSite: "none", // CSRF protection
   });
 
   res.status(200).json(new ApiResponse(200, "Login successful", { user }));
