@@ -62,7 +62,7 @@ const createProblem = asyncHandler(async (req, res) => {
 // Get a Particular Problem by ID
 const getProblemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-
+  console.log(id)
   const problem = await Problem.findById(id);
   if (!problem) {
     throw new ApiError(404, "Problem not found!");

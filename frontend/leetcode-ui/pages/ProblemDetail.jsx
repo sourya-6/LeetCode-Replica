@@ -40,93 +40,94 @@ const code = codeMap[id] || "// Write your code here";
     };
   }, [isFullscreen]);
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const submitRes = await axios.post('/codeExecution/submit', {
-  //       problemId: id,
-  //       code,
-  //       language,
-  //       functionName: problem.functionName,
-  //       testCases: problem.testCases,
-  //     });
-
-  //     const jobId = submitRes.data.message.jobId;
-
-  //     // Poll for the result
-  //     let retries = 20;
-  //     let result = null;
-
-  //     while (retries--) {
-  //       const pollRes = await axios.get(`/codeExecution/result/${jobId}`);
-  //       if (pollRes.data.message?.result) {
-  //         result = pollRes.data.message.result;
-  //         break;
-  //       }
-  //       await new Promise((r) => setTimeout(r, 1000));
-  //     }
-
-  //     navigate('/result', {
-  //       state: { jobId, result, problem, language, code },
-  //     });
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert('Submission failed!');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleSubmit = async () => {
-  try {
-    setLoading(true);
-    const submitRes = await axios.post('/codeExecution/submit', {
-      problemId: id,
-      code,
-      language,
-      functionName: problem.functionName,
-      testCases: problem.testCases,
-    });
+    try {
+      setLoading(true);
+      const submitRes = await axios.post('/codeExecution/submit', {
+        problemId: id,
+        code,
+        language,
+        functionName: problem.functionName,
+        testCases: problem.testCases,
+      });
 
-    const jobId = submitRes.data.message.jobId;
+      const jobId = submitRes.data.message.jobId;
 
-    // ⏳ Poll for result
-    let retries = 20;
-    let result = null;
+      // Poll for the result
+      let retries = 20;
+      let result = null;
 
-    while (retries--) {
-      const pollRes = await axios.get(`/codeExecution/result/${jobId}`);
-      if (pollRes.data.message?.result) {
-        result = pollRes.data.message.result;
-        break;
+      while (retries--) {
+        const pollRes = await axios.get(`/codeExecution/result/${jobId}`);
+        if (pollRes.data.message?.result) {
+          result = pollRes.data.message.result;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, 1000));
       }
-      await new Promise((r) => setTimeout(r, 1000));
+
+      navigate('/result', {
+        state: { jobId, result, problem, language, code },
+      });
+    } catch (err) {
+      console.error(err);
+      alert('Submission failed!');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    if (!result) throw new Error("Job result timed out");
+//   const handleSubmit = async () => {
+//   try {
+//     setLoading(true);
+//     const submitRes = await axios.post('/codeExecution/submit', {
+//       problemId: id,
+//       code,
+//       language,
+//       functionName: problem.functionName,
+//       testCases: problem.testCases,
+//     });
 
-    // 💾 Save submission to DB
-    await axios.post('/submission/save', {
-      problemId: id,
-      code,
-      language,
-      testResults: result.output.testResults,
-      passedCount: result.output.passedCount,
-      failedCount: result.output.failedCount,
-      score: result.score || 0  // optional
-    });
+//     const jobId = submitRes.data.message.jobId;
 
-    // 🚀 Navigate to result page
-    navigate('/result', {
-      state: { jobId, result, problem, language, code },
-    });
-  } catch (err) {
-    console.error(err);
-    alert('Submission failed!');
-  } finally {
-    setLoading(false);
-  }
-};
+//     // ⏳ Poll for result
+//     let retries = 20;
+//     let result = null;
+
+//     while (retries--) {
+//       const pollRes = await axios.get(`/codeExecution/result/${jobId}`);
+//       if (pollRes.data.message?.result) {
+//         result = pollRes.data.message.result;
+//         break;
+//       }
+//       await new Promise((r) => setTimeout(r, 1000));
+//     }
+
+//     if (!result) throw new Error("Job result timed out");
+
+//     // 💾 Save submission to DB
+//     await axios.post('/submissions/save', {
+//       problemId: id,
+      
+//       code,
+//       language,
+//       testResults: result.output.testResults,
+//       passedCount: result.output.passedCount,
+//       failedCount: result.output.failedCount,
+//       score: result.score || 0  // optional
+//     });
+
+//     // 🚀 Navigate to result page
+//     navigate('/result', {
+//       state: { jobId, result, problem, language, code },
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     alert('Submission failed!');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
   const handleRun = async () => {
     setRunResult(null);
@@ -147,7 +148,7 @@ const code = codeMap[id] || "// Write your code here";
     }
   };
 
-  if (!problem) return <p className="text-center text-lg font-medium mt-10">Loading...</p>;
+  if (!problem) return <p className="text-center  text-lg font-medium mt-10">Loading...</p>;
 
   return (
     <div className="h-[calc(100vh-4rem)] bg-gray-50">

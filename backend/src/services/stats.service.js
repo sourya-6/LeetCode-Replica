@@ -1,8 +1,9 @@
-import User from "../models/user.js";
-import Submission from "../models/submission.js";
+import { User } from "../models/user.models.js";
+import { Submission } from "../models/submissions.model.js";
 
-export const updateUserStats = async (userId, problemId, isAccepted) => {
-  const user = await User.findById(userId);
+export const updateUserStats = async (userId,  isAccepted) => {
+  console.log(req.user?._id)
+  const user = await User.findById(req.user?._id);
   if (!user) return;
 
   user.totalSubmissions += 1;
@@ -11,7 +12,6 @@ export const updateUserStats = async (userId, problemId, isAccepted) => {
 
     const alreadySolved = await Submission.exists({
       user: userId,
-      problem: problemId,
       isAccepted: true,
     });
 
