@@ -3,8 +3,7 @@ import { v4 as uuid } from "uuid";
 
 // const redisClient = createClient({ url: "redis://redis:6379" });
 const redisClient = createClient({
-  url: 'https://loyal-beetle-26064.upstash.io',
-  token: 'AWXQAAIjcDEzZTljMDZmOGIyZmQ0MDBlODY4MTNlMTAyZTBmMmVkZnAxMA',
+  url: "redis://default:AWXQAAIjcDEzZTljMDZmOGIyZmQ0MDBlODY4MTNlMTAyZTBmMmVkZnAxMA@loyal-beetle-26064.upstash.io:6379"
 });
 await redisClient.connect();
 
