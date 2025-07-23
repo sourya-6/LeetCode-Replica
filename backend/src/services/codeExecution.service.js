@@ -23,11 +23,12 @@ export const submitCode = async (userId, code, language, functionName, testCases
     testCases,
   };
 
-  await redisClient.rPush("jobQueue", JSON.stringify(job));
+  await redisClient.rpush("jobQueue", JSON.stringify(job));
   return jobId;
 };
 
 export const getCodeExecutionResult = async (jobId) => {
   const result = await redisClient.get(`result:${jobId}`);
-  return result ? JSON.parse(result) : null;
+  // return result ? JSON.parse(result) : null;
+  return result ? result : null;
 };
