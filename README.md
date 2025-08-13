@@ -1,87 +1,90 @@
-# 🛒 SnapBuy – MERN Stack E-Commerce Platform
-
-SnapBuy is a **production-ready MERN stack e-commerce application** with **role-based access control**, **secure authentication**, **cart & order management**, and **Razorpay payment integration**.
 
 ---
 
-## 📌 Features Implemented
+#  CodeArena – MERN Stack Online Code Execution Platform
+
+CodeArena is a **production-ready MERN stack online coding platform** with **real-time code execution**, **problem management**, **submission tracking**, and **multi-language support**.
+
+---
+
+## 🚀 Features Implemented
 
 ### 1. Authentication & User Management
-- JWT authentication using **HTTP-only cookies** (access & refresh tokens)
-- **Role-Based Access Control (RBAC)** – Admin, Seller, Customer
-- Email verification with OTP via **Nodemailer**
-- Forgot/Reset password with OTP
-- Google & Facebook social login support
-- Welcome email on registration
-- Logout & secure token handling
+
+* JWT authentication using **HTTP-only cookies** (access & refresh tokens)
+* Email verification with OTP via **Nodemailer**
+* Forgot/Reset password with OTP
+* Google & Facebook social login support
+* Welcome email on registration
+* Logout & secure token handling
 
 ---
 
-### 2. Product Management
-- Create, update, delete products (Admin/Seller access)
-- Bulk product upload via CSV
-- Get all products with pagination & filters
-- Image upload using **Cloudinary**
+### 2. Problem Management
+
+* Create, update, delete problems (Admin access)
+* Add custom test cases
+* Get all problems with pagination & filters
 
 ---
 
-### 3. Cart Management
-- Add to cart
-- Update quantity
-- Remove item
-- Clear cart
-- Automatic subtotal & total price calculation
-- Coupon support (placeholder for now)
+### 3. Code Execution
+
+* Supports **JavaScript, Python, and C++**
+* Docker-based isolated code execution
+* Two modes:
+
+  * **Run Code** → Executes only first 2 test cases instantly
+  * **Submit Code** → Executes all test cases via Redis job queue
+* Automatic output verification against expected results
+* Stores execution results & stats in MongoDB
 
 ---
 
-### 4. Order Management
-- Create order after successful payment
-- View all orders for a user
-- Admin can view all orders
+### 4. Submission Management
+
+* Store user submissions with code, language, status, and results
+* Retrieve all submissions for a problem
+* Display passed/failed test case counts
 
 ---
 
-### 5. Payment Integration (Razorpay)
-- Create order for payment
-- Verify payment signature
-- Store payment details in DB
-- **Razorpay Webhook** support (for automated payment confirmation)
-- Test mode support for localhost
+### 5. Security & Middleware
 
----
-
-### 6. Security & Middleware
-- **ApiError** & **ApiResponse** for standardized error & success handling
-- Authentication middleware
-- Role-based access middleware
-- Multer for file uploads
+* **ApiError** & **ApiResponse** for standardized error & success handling
+* Authentication middleware
+* Role-based access middleware
+* Input validation
+* Docker sandbox isolation for secure execution
 
 ---
 
 ## 🛠️ Tech Stack
 
 **Frontend:**
-- React (Vite)
-- Redux Toolkit + redux-persist
-- Tailwind CSS
-- Shadcn UI
-- Axios
+
+* React (Vite)
+* Redux Toolkit + redux-persist
+* Tailwind CSS
+* Shadcn UI
+* Axios
+* Monaco Editor (code editor)
 
 **Backend:**
-- Node.js + Express
-- MongoDB + Mongoose
-- Cloudinary (image uploads)
-- Nodemailer (emails)
-- Razorpay (payments)
-- Multer (file upload)
-- JWT (authentication)
+
+* Node.js + Express
+* MongoDB + Mongoose
+* Docker (sandbox execution)
+* Redis (job queue)
+* Nodemailer (emails)
+* JWT (authentication)
 
 ---
 
 ## 📂 Project Structure
 
 ### Backend
+
 ```plaintext
 backend/
 ├── src/
@@ -94,32 +97,98 @@ backend/
 │ └── db/
 ├── app.js
 ├── index.js
+├── worker.js
 ├── Dockerfile
 ├── docker-compose.yml
 ```
 
-
 ### Frontend
-``` plaintext
+
+```plaintext
 frontend/
 ├── src/
 │ ├── components/
 │ ├── pages/
 │ ├── redux/
 │ ├── utils/
+│ ├── editors/
 │ └── App.jsx
 ├── vite.config.js
 ├── package.json
 ```
-
 
 ---
 
 ## ⚙️ Setup & Installation
 
 ### 1. Clone the Repository
-<pre>
+
 ```bash
-git clone https://github.com/sourya-6/ecommerce.git
-cd snapbuy
-</pre>
+git clone https://github.com/sourya-6/codearena.git
+```
+
+```bash
+cd codearena
+```
+
+---
+
+### 2. Backend Setup
+
+```bash
+cd backend
+npm install
+```
+
+Create `.env` file in backend folder:
+
+```plaintext
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/codearena
+JWT_SECRET=your_jwt_secret
+ACCESS_TOKEN_EXPIRY=15m
+REFRESH_TOKEN_EXPIRY=7d
+SMTP_HOST=smtp.yourservice.com
+SMTP_PORT=587
+SMTP_USER=your_email
+SMTP_PASS=your_email_password
+REDIS_URL=redis://localhost:6379
+FRONTEND_URL=http://localhost:5173
+```
+
+---
+
+### 3. Frontend Setup
+
+```bash
+cd frontend
+npm install
+```
+
+Create `.env` file in frontend folder:
+
+```plaintext
+VITE_API_URL=http://localhost:5000/api/v1
+```
+
+---
+
+### 4. Running the App
+
+Start Backend:
+
+```bash
+cd backend
+npm run dev
+```
+
+Start Frontend:
+
+```bash
+cd frontend
+npm run dev
+```
+
+---
+
+
