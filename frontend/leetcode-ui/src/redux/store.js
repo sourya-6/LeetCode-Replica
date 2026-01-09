@@ -5,16 +5,17 @@ import storage from "redux-persist/lib/storage"; // localStorage
 import { combineReducers } from "redux";
 
 import codeReducer from "./slices/codeSlice";
+import authReducer from "./slices/authSlice";
 
 const rootReducer = combineReducers({
   code: codeReducer,
-  // you can add more slices like auth, theme, etc
+  auth: authReducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["code"], // only persist this
+  whitelist: ["code", "auth"], // persist both code and auth
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -11,8 +11,13 @@ import { Problem } from "../models/problem.model.js";
 export const executeCodeController = asyncHandler(async (req, res) => {
   const { code, language, functionName, testCases } = req.body;
   const userId = req.user?.id;
-console.log(userId,"Getting into it")
-  const jobId = await submitCode(userId, code, language, functionName, testCases);
+  const jobId = await submitCode(
+    userId,
+    code,
+    language,
+    functionName,
+    testCases
+  );
 
   res
     .status(202)

@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const userSchema = new Schema(
   {
     name: { type: String, required: true },
-    username: { type: String, required: true, unique: true },
+    username: { type: String,  unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String },
     role: { type: String, enum: ["admin", "user"], default: "user" },
@@ -23,7 +23,11 @@ const userSchema = new Schema(
     accountLockUntil: { type: Date },
 
     // Social Login
-    authProvider: { type: String, enum: ["email", "google", "facebook", "github"], default: "email" },
+    authProvider: {
+      type: String,
+      enum: ["email", "google", "facebook", "github"],
+      default: "email",
+    },
     providerId: { type: String },
 
     // Login Tracking
@@ -42,7 +46,7 @@ const userSchema = new Schema(
 // Hash password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
@@ -53,12 +57,18 @@ userSchema.methods.isPasswordCorrect = function (password) {
 
 // Generate Access Token
 userSchema.methods.generateAccessToken = function () {
-  return jwt.sign({ _id: this._id, role: this.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+  return jwt.sign(
+    { _id: this._id, role: this.role },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "1h" }
+  );
 };
 
 // Generate Refresh Token
 userSchema.methods.generateRefreshToken = function () {
-  return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
 // Generate OTP
@@ -71,11 +81,12 @@ userSchema.methods.generateOTP = function () {
 
 // Generate Reset Password Token
 userSchema.methods.generateResetPasswordToken = function () {
-  const token = jwt.sign({ _id: this._id }, process.env.RESET_PASSWORD_SECRET, { expiresIn: "15m" });
+  const token = jwt.sign({ _id: this._id }, process.env.RESET_PASSWORD_SECRET, {
+    expiresIn: "15m",
+  });
   this.resetPasswordToken = token;
   this.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
   return token;
 };
 
- export const User = mongoose.model("User", userSchema);
-
+export const User = mongoose.model("User", userSchema);
